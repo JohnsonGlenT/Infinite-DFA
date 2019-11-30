@@ -1,4 +1,4 @@
-CC = gcc -Wall
+CC = gcc -Wall -g
 
 build: main.o dfa.o
 	$(CC) -o isInfinite.out main.o dfa.o
