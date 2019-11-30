@@ -1,0 +1,10 @@
+7       # Total number of states
+2       # Total elements in alphabet
+a b     # Alphabet members in low to high order
+1 a 4   # Delta Table
+1 b 4   # Start Node, Alphabet member, End Node
+2 a 1   # Start Node, Alphabet member, End Node
+1 b 2   # End of Delta Table
+0       # Start state
+2       # Total number of exit states
+3 4     # Exit states
