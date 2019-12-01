@@ -4,5 +4,6 @@
 #include "dfa.h"
 
 DFA* scanFile(char*);
+void printRegex(DFA*);
 
 #endif
