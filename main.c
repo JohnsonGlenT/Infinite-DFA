@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "main.h"
 
 int main(int argc, char** argv) {
@@ -11,10 +12,13 @@ int main(int argc, char** argv) {
 
     if (infinite(dfa)) {
         printf("This DFA has an infinite language.\n");
+        freeDFA(dfa);
         return 0;
     }
 
     printf("This DFA does not have an infinite language.\n");
+
+    freeDFA(dfa);
 
     return 0;
 }
@@ -27,7 +31,12 @@ int main(int argc, char** argv) {
 
 DFA* scanFile(char* txt) {
     if (txt == NULL) { return NULL; } 
-    FILE* fp = fopen(txt, "rw");
+    
+    if (access(txt, F_OK) == -1) {
+        return NULL;
+    }
+
+    FILE* fp = fopen(txt, "r");
     
     DFA* dfa = createDFA();
     int tmp;
@@ -68,14 +77,14 @@ DFA* scanFile(char* txt) {
     }
     
     // Gets transistions of DFA and creates table
-    for (int i = 0; i < (dfa->q * dfa->sigmaLen); i++) {
+    for (int i = 0; i < (dfa->q*dfa->sigmaLen); i++) {
         f = fscanf(fp, "%d %s %d", &tmp, c, &out);
         if (f == EOF) { return NULL; }
         if (tmp < 0 || tmp >= dfa->q) { return NULL; }
         if (out < 0 || out >= dfa->q) { return NULL; }
         index = indexOf(dfa->sigma, c[0]);
         if (index == -1) { return NULL; } 
-        dfa->allTrans[index][tmp] = createEdge(dfa->allNodes[out], c[0]);
+        dfa->allTrans[tmp][index] = createEdge(dfa->allNodes[out], c[0]);
     }
     
     // Gets start state
@@ -98,6 +107,8 @@ DFA* scanFile(char* txt) {
         if (out < 0 || out >= dfa->q) { return NULL; }
         dfa->exit[i] = dfa->allNodes[out];
     }
+
+    fclose(fp);
 
     return dfa;
 }

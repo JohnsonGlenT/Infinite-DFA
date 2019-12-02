@@ -23,8 +23,8 @@ Node* createNode(int n) {
 
 int infinite(DFA* dfa) {
     for (int i = 0; i < dfa->q; i++) {
-        if(infSearch(dfa, dfa->allNodes[i], dfa->allNodes[i]) 
-                        && canReach(dfa, dfa->allNodes[i]) 
+        infSearch(dfa, dfa->allNodes[i], dfa->allNodes[i]);
+        if(dfa->allNodes[i]->infinite && canReach(dfa, dfa->allNodes[i]) 
                         && canSolve(dfa, dfa->allNodes[i])) {
             return 1;
         }
@@ -81,6 +81,7 @@ int search(DFA* dfa, Node* init, Node* goal) {
             }
         }
     }
+    init->color = BLACK;
 
     return 0;
 }
@@ -101,7 +102,7 @@ int infSearch(DFA* dfa, Node* init, Node* goal) {
             return 1;
         }
 
-       if (init->out[j]->dest != init) {
+       if (init->out[j]->dest != init && init->out[j]->dest == WHITE) {
             if (infSearch(dfa, init->out[j]->dest, goal)) {
                 init->color = BLACK;
                 init->infinite = 1;
@@ -135,9 +136,7 @@ Edge* createEdge(Node* n, char c) {
 
 void attachEdges(DFA* dfa) {
     for (int i = 0; i < dfa->q; i++) {
-        for (int j = 0; j < dfa->sigmaLen; j++) {
-            dfa->allNodes[i]->out = dfa->allTrans[i];
-        }
+        dfa->allNodes[i]->out = dfa->allTrans[i];
     }
 }
 
@@ -162,8 +161,8 @@ DFA* createDFA() {
 int isValidDFA(DFA* dfa) {
     if (dfa == NULL) { return 0; }
 
-    for (int i = 0; i < dfa->sigmaLen; i++) {
-        for (int j = 0; j < dfa->q; j++) {
+    for (int i = 0; i < dfa->q; i++) {
+        for (int j = 0; j < dfa->sigmaLen; j++) {
             if (dfa->allTrans[i][j] == NULL) {
                 return 0;
             }
@@ -190,5 +189,29 @@ int indexOf(char* arr, char c) {
         arr++;
     }
     return -1;
+}
+
+/*
+ * Frees the DFA
+ *
+ */
+
+void freeDFA(DFA* dfa) {
+    for (int i = 0; i < dfa->q; i++) {
+        
+        free(dfa->allNodes[i]);
+        
+        for (int j = 0; j < dfa->sigmaLen; j++) {
+            free(dfa->allTrans[i][j]);
+        }
+
+        free(dfa->allTrans[i]);
+    }
+
+    free(dfa->allNodes);
+    free(dfa->allTrans);
+    free(dfa->sigma);
+    free(dfa->exit);
+    free(dfa);
 }
 

@@ -57,6 +57,7 @@ struct dfa {
 // DFA FUNCTIONS
 DFA* createDFA();
 
+void freeDFA(DFA*);
 int isValidDFA(DFA*);
 int indexOf(char*, char);
 
